@@ -7,7 +7,8 @@ This tool helps you complete the "oauth dance" and issue arbitrary rest commands
 
 ## Usage
 
-Start my installing [composer](https://getcomposer.org/) dependencies:
+Start by installing [composer](https://getcomposer.org/) dependencies:
+
     $ php composer.phar install
 
 ### Authorize
