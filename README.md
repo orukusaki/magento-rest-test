@@ -15,6 +15,7 @@ Start my installing [composer](https://getcomposer.org/) dependencies:
     php bin/rest-test.php authorize [-p|--platform="..."]
 
 Run this command first.  The platform flag allows you to store multiple named configurations (staging, production etc). Pick whatever you like, but remember it for later.
+
 You'll be prompted for your Magento Base Url, Consumer Key and Consumer Secret (set these up in Magento Admin).
 The script will then initialise an oAuth session and try to open a browser window to allow you to authorise the application. 
 It listens on port 8000 for the callback.  Once the authorisation has completed, the token is stored in config.json.
