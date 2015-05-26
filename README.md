@@ -22,6 +22,7 @@ The platform flag allows you to store multiple named configurations (staging, pr
 
 Use this command to issue a REST request.  The results are displayed as json.
 example:
+
     $ php bin/rest-test.php request -p local api/rest/customers
     Sending: https://magento.local/api/rest/customers
     {
