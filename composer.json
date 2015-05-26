@@ -1,0 +1,26 @@
+{
+    "name": "orukusaki/magento-rest-test",
+    "description": "CLI client for testing the Magento REST Api",
+    "keywords": [
+        "magento",
+        "rest",
+        "oauth",
+        "client"
+    ],
+    "license": "MIT",
+    "authors": [
+      {
+        "name": "Peter Smith",
+        "email": "peter@orukusaki.co.uk",
+      }
+    ],
+    "require": {
+        "guzzlehttp/oauth-subscriber": "^0.2.0",
+        "cilex/cilex": "^1.1"
+    },
+    "autoload": {
+      "psr-4" : {
+        "Orukusaki\\MagentoRestTest\\": "src"
+      }
+    }
+}
