@@ -58,4 +58,4 @@ If you get an error response from Magento, your token might have expired.  Try r
 
 ### Contributing
 
-PRs, Issues welcomed on [github][https://github.com/orukusaki/magento-rest-test]
+PRs, Issues welcomed on [github](https://github.com/orukusaki/magento-rest-test)
