@@ -5,22 +5,25 @@ A simple CLI tool for testing the Magento REST API.
 Manually testing REST is a pain in Magento, as all requests must include an oauth signature.
 This tool helps you complete the "oauth dance" and issue arbitrary rest commands to your magento installation.
 
-## Commands
+## Usage
+
+Start my installing [composer](https://getcomposer.org/) dependencies:
+    $ php composer.phar install
+
 ### Authorize
 
     php bin/rest-test.php authorize [-p|--platform="..."]
 
-Run this command first.  You'll be prompted for your consumer key and secret (set these up in Magento Admin).
-The script will then initialise an oAuth session and try to open a browser window to allow you to authorise the application.
+Run this command first.  The platform flag allows you to store multiple named configurations (staging, production etc). Pick whatever you like, but remember it for later.
+You'll be prompted for your Magento Base Url, Consumer Key and Consumer Secret (set these up in Magento Admin).
+The script will then initialise an oAuth session and try to open a browser window to allow you to authorise the application. 
 It listens on port 8000 for the callback.  Once the authorisation has completed, the token is stored in config.json.
-
-The platform flag allows you to store multiple named configurations (staging, production etc).
 
 ### Request
 
     php bin/rest-test.php request [-p|--platform="..."] [-m|--method[="..."]] request
 
-Use this command to issue a REST request.  The results are displayed as json.
+Use this command to issue a REST request.  The results are displayed as json.  Use the platform flag to load the config and tokens you set up previously in the authorise step.
 
 Example:
 
