@@ -25,7 +25,7 @@ class AuthoriseCommand extends Command
     {
         $this->setName('authorize')
             ->setDescription('Do the "oauth dance" to get a request token')
-            ->addOption('platform', 'p', InputOption::VALUE_REQUIRED, 'Platform (from config.json)');
+            ->addOption('platform_id', 'p', InputOption::VALUE_REQUIRED, 'Platform Id (from config.json)');
     }
 
     /**
@@ -33,12 +33,12 @@ class AuthoriseCommand extends Command
      */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
-        $platform = $input->getOption('platform');
+        $platformId = $input->getOption('platform_id');
         $config = $this->getService('config');
 
-        if (property_exists($config, $platform)) {
+        if (property_exists($config, $platformId)) {
 
-            $platformConfig = $config->$platform;
+            $platformConfig = $config->$platformId;
             unset($platformConfig->token);
             unset($platformConfig->token_secret);
             unset($platformConfig->verifier);
@@ -51,17 +51,17 @@ class AuthoriseCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $platform = $input->getOption('platform');
+        $platformId = $input->getOption('platform_id');
 
         $output->writeln('Initiating Oauth');
-        $vars = $this->getResponse($platform, '/oauth/initiate');
+        $vars = $this->getResponse($platformId, '/oauth/initiate');
 
         $output->writeln('Request Token: ' . $vars['oauth_token']);
         $output->writeln('Secret: ' . $vars['oauth_token_secret']);
 
         $config = $this->getService('config');
 
-        $url = $config->$platform->base_url . '/admin/oauth_authorize?oauth_token=' . $vars['oauth_token'];
+        $url = $config->$platformId->base_url . '/admin/oauth_authorize?oauth_token=' . $vars['oauth_token'];
         exec('open '. escapeshellarg($url));
 
         $output->writeln("Verify this token at $url");
@@ -87,15 +87,15 @@ class AuthoriseCommand extends Command
         fclose($socket);
 
         // The request token must be sent when requesting the access token
-        $config->$platform->token = $vars['oauth_token'];
-        $config->$platform->token_secret = $vars['oauth_token_secret'];
-        $config->$platform->verifier = $query['oauth_verifier'];
+        $config->$platformId->token = $vars['oauth_token'];
+        $config->$platformId->token_secret = $vars['oauth_token_secret'];
+        $config->$platformId->verifier = $query['oauth_verifier'];
 
-        $vars = $this->getResponse($platform, '/oauth/token');
+        $vars = $this->getResponse($platformId, '/oauth/token');
 
         // Now we have an access token, which we'll save in the config
-        $config->$platform->token = $vars['oauth_token'];
-        $config->$platform->token_secret = $vars['oauth_token_secret'];
+        $config->$platformId->token = $vars['oauth_token'];
+        $config->$platformId->token_secret = $vars['oauth_token_secret'];
 
         $output->writeln('Access Token: ' . $vars['oauth_token']);
         $output->writeln('Secret: ' . $vars['oauth_token_secret']);
@@ -111,16 +111,16 @@ class AuthoriseCommand extends Command
     {
         $config = $this->getService('config');
 
-        if (!$input->getOption('platform')) {
+        if (!$input->getOption('platform_id')) {
 
-            $input->setOption('platform', $this->getHelper('dialog')->ask($output, "Platform Name:"));
+            $input->setOption('platform_id', $this->getHelper('dialog')->ask($output, "Platform Id:"));
         }
 
         $platformConfig = new stdClass;
 
-        if (isset($config->{$input->getOption('platform')})) {
+        if (isset($config->{$input->getOption('platform_id')})) {
 
-            $platformConfig = $config->{$input->getOption('platform')};
+            $platformConfig = $config->{$input->getOption('platform_id')};
         }
 
         if (!isset($platformConfig->base_url)) {
@@ -138,7 +138,7 @@ class AuthoriseCommand extends Command
             $platformConfig->consumer_secret = $this->getHelper('dialog')->ask($output, "Consumer Secret:");
         }
 
-        $config->{$input->getOption('platform')} = $platformConfig;
+        $config->{$input->getOption('platform_id')} = $platformConfig;
         $this->getContainer()['config'] = $config;
 
         file_put_contents($this->getService('config.path'), json_encode($config, JSON_PRETTY_PRINT));
@@ -150,12 +150,12 @@ class AuthoriseCommand extends Command
      *
      * @return mixed
      */
-    private function getResponse($platform, $path)
+    private function getResponse($platformId, $path)
     {
         /** @var Callable $clientFactory */
         $clientFactory = $this->getContainer()['client_factory'];
         /** @var Client $client */
-        $client = $clientFactory($platform);
+        $client = $clientFactory($platformId);
 
         try {
             parse_str((string) $client->post($path)->getBody(), $vars);

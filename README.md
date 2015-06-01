@@ -13,9 +13,9 @@ Start by installing [composer](https://getcomposer.org/) dependencies:
 
 ### Authorize
 
-    php bin/rest-test.php authorize [-p|--platform="..."]
+    php bin/rest-test.php authorize [-p|--platform_id="..."]
 
-Run this command first.  The platform flag allows you to store multiple named configurations (staging, production etc). Pick whatever you like, but remember it for later.
+Run this command first.  The platform id flag allows you to store multiple named configurations (staging, production etc). Pick whatever you like, but remember it for later.
 
 You'll be prompted for your Magento Base Url, Consumer Key and Consumer Secret (set these up in Magento Admin).
 The script will then initialise an oAuth session and try to open a browser window to allow you to authorise the application. 
@@ -23,13 +23,13 @@ It listens on port 8000 for the callback.  Once the authorisation has completed,
 
 ### Request
 
-    php bin/rest-test.php request [-p|--platform="..."] [-m|--method[="..."]] request
+    php bin/rest-test.php request [-p|--platform_id="..."] [-m|--http_verb[="..."]] http_resource
 
-Use this command to issue a REST request.  The results are displayed as json.  Use the platform flag to load the config and tokens you set up previously in the authorise step.
+Use this command to issue a REST request.  The results are displayed as json.  Use the platform id flag to load the config and tokens you set up previously in the authorise step.
 
 Example:
 
-    $ php bin/rest-test.php request -p local api/rest/customers
+    $ php bin/rest-test.php request -plocal /customers
     Sending: https://magento.local/api/rest/customers
     {
         "1": {
