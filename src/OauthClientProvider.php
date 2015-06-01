@@ -22,17 +22,17 @@ class OauthClientProvider implements ServiceProviderInterface
     public function register(Application $app)
     {
         $app['client_factory'] = $app->protect(
-            function ($platform) use ($app) {
+            function ($platformId) use ($app) {
 
                 $config = $app['config'];
 
-                if (!property_exists($config, $platform)) {
+                if (!property_exists($config, $platformId)) {
                     throw new RuntimeException(
-                        "Couldn't find platform details for $platform. Run the 'authorise' command first."
+                        "Couldn't find platform details for $platformId. Run the 'authorize' command first."
                     );
                 }
 
-                $platformDetails = (array) $config->$platform;
+                $platformDetails = (array) $config->$platformId;
 
                 $client = new Client(
                     [

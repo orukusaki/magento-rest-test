@@ -17,7 +17,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class RequestCommand extends Command
 {
-
     /**
      * @inheritdoc
      */
@@ -25,9 +24,9 @@ class RequestCommand extends Command
     {
         $this->setName('request')
             ->setDescription('Perform a REST request (after authorising)')
-            ->addArgument('request', InputArgument::REQUIRED)
-            ->addOption('platform', 'p', InputOption::VALUE_REQUIRED, 'Platform (from config.json)')
-            ->addOption('method', 'm', InputOption::VALUE_OPTIONAL, 'Method (default: GET)', 'GET');
+            ->addArgument('http_resource', InputArgument::REQUIRED, 'HTTP Resource')
+            ->addOption('platform_id', 'p', InputOption::VALUE_REQUIRED, 'Platform Id (from config.json)')
+            ->addOption('http_verb', 'm', InputOption::VALUE_OPTIONAL, 'HTTP Verb (default: GET)', 'GET');
     }
 
     /**
@@ -35,15 +34,15 @@ class RequestCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $platform = $input->getOption('platform');
+        $platformId = $input->getOption('platform_id');
 
         /** @var Callable $clientFactory */
         $clientFactory = $this->getContainer()['client_factory'];
         /** @var Client $client */
-        $client = $clientFactory($platform);
+        $client = $clientFactory($platformId);
 
         try {
-            $request = $client->createRequest($input->getOption('method'), $input->getArgument('request'));
+            $request = $client->createRequest($input->getOption('http_verb'), 'api/rest/' . ltrim($input->getArgument('http_resource'), '/'));
             $output->writeln('Sending: ' . $request->getUrl());
 
             /** @var ResponseInterface $response */
@@ -64,14 +63,14 @@ class RequestCommand extends Command
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
-        if (!$input->getOption('platform')) {
+        if (!$input->getOption('platform_id')) {
 
-            $input->setOption('platform', $this->getHelper('dialog')->ask($output, "Platform Name:"));
+            $input->setOption('platform_id', $this->getHelper('dialog')->ask($output, "Platform Id:"));
         }
 
-        if (!$input->getArgument('request')) {
+        if (!$input->getArgument('http_resource')) {
 
-            $input->setArgument('request', $this->getHelper('dialog')->ask($output, "Request:"));
+            $input->setArgument('http_resource', $this->getHelper('dialog')->ask($output, "HTTP Resource:"));
         }
     }
 }
