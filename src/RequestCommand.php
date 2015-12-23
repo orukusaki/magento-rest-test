@@ -2,8 +2,10 @@
 
 namespace Orukusaki\MagentoRestTest;
 
+use Exception;
 use Cilex\Command\Command;
 use GuzzleHttp\Client;
+use GuzzleHttp\Stream\Stream;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Message\ResponseInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -26,7 +28,9 @@ class RequestCommand extends Command
             ->setDescription('Perform a REST request (after authorising)')
             ->addArgument('http_resource', InputArgument::REQUIRED, 'HTTP Resource')
             ->addOption('platform_id', 'p', InputOption::VALUE_REQUIRED, 'Platform Id (from config.json)')
-            ->addOption('http_verb', 'm', InputOption::VALUE_OPTIONAL, 'HTTP Verb (default: GET)', 'GET');
+            ->addOption('http_verb', 'm', InputOption::VALUE_OPTIONAL, 'HTTP Verb (default: GET)', 'GET')
+            ->addOption('request_content', 'c', InputOption::VALUE_OPTIONAL, 'HTTP Request Content')
+            ->addOption('request_type', 't', InputOption::VALUE_OPTIONAL, 'HTTP Request Content Type');
     }
 
     /**
@@ -45,6 +49,18 @@ class RequestCommand extends Command
             $request = $client->createRequest($input->getOption('http_verb'), 'api/rest/' . ltrim($input->getArgument('http_resource'), '/'));
             $output->writeln('Sending: ' . $request->getUrl());
 
+            if ($input->getOption('request_content')) {
+
+                if (!is_string($input->getOption('request_type'))) {
+                    throw new Exception('request_type (-t) is a required parameter when request_content (-c) is used');
+                }
+
+                $body = Stream::factory($input->getOption('request_content'));
+                $request->setBody($body);
+                $request->setHeader('Content-Type', $this->parseContentType($input->getOption('request_type')));
+                $output->writeln('Request body: ' . $body);
+            }
+
             /** @var ResponseInterface $response */
             $response = $client->send($request);
 
@@ -55,6 +71,8 @@ class RequestCommand extends Command
             $output->writeln('Request failed: ' . (string) $e->getResponse()->getBody());
 
             throw $e;
+        } catch (Exception $e) {
+            $output->writeln('Invalid request: ' . (string) $e->getMessage());
         }
     }
 
@@ -72,5 +90,20 @@ class RequestCommand extends Command
 
             $input->setArgument('http_resource', $this->getHelper('dialog')->ask($output, "HTTP Resource:"));
         }
+    }
+
+    /**
+     * Convert a shorthand HTTP Content-Type in to the valid request type
+     *
+     * @param $type
+     * @return string
+     */
+    protected function parseContentType($type) {
+        $types = array(
+            'json' => 'application/json',
+            'xml' => 'application/xml'
+        );
+
+        return (in_array($type, array_keys($types))) ? $types[$type] : (string) $type;
     }
 }
