@@ -23,7 +23,7 @@ It listens on port 8000 for the callback.  Once the authorisation has completed,
 
 ### Request
 
-    php bin/rest-test.php request [-p|--platform_id="..."] [-m|--http_verb[="..."]] http_resource
+    php bin/rest-test.php request [-p|--platform_id="..."] [-m|--http_verb[="..."]] [-t|--request_type[="..."]] [-c|--request_content[="..."]] http_resource
 
 Use this command to issue a REST request.  The results are displayed as json.  Use the platform id flag to load the config and tokens you set up previously in the authorise step.
 
