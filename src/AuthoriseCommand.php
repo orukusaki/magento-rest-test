@@ -61,7 +61,7 @@ class AuthoriseCommand extends Command
 
         $config = $this->getService('config');
 
-        $url = $config->$platformId->base_url . '/admin/oauth_authorize?oauth_token=' . $vars['oauth_token'];
+        $url = $config->$platformId->base_url . '/' . $config->$platformId->admin_url_front_name . '/oauth_authorize?oauth_token=' . $vars['oauth_token'];
         exec('open '. escapeshellarg($url));
 
         $output->writeln("Verify this token at $url");
@@ -126,6 +126,11 @@ class AuthoriseCommand extends Command
         if (!isset($platformConfig->base_url)) {
 
             $platformConfig->base_url = $this->getHelper('dialog')->ask($output, "Base Url:");
+        }
+
+        if (!isset($platformConfig->admin_url_front_name)) {
+
+            $platformConfig->admin_url_front_name = $this->getHelper('dialog')->ask($output, "Admin Url Front Name (usually 'admin'):");
         }
 
         if (!isset($platformConfig->consumer_key)) {
