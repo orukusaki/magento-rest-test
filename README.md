@@ -23,11 +23,11 @@ It listens on port 8000 for the callback.  Once the authorisation has completed,
 
 ### Request
 
-    php bin/rest-test.php request [-p|--platform_id="..."] [-m|--http_verb[="..."]] http_resource
+    php bin/rest-test.php request [-p|--platform_id="..."] [-m|--http_verb[="..."]] [-t|--request_type[="..."]] [-c|--request_content[="..."]] http_resource
 
 Use this command to issue a REST request.  The results are displayed as json.  Use the platform id flag to load the config and tokens you set up previously in the authorise step.
 
-Example:
+Get Example:
 
     $ php bin/rest-test.php request -plocal /customers
     Sending: https://magento.local/api/rest/customers
@@ -57,6 +57,29 @@ Example:
             "dob": "1980-01-01 00:00:00"
         }
     }
+
+Put Example:
+
+    $ php bin/rest-test.php request -plocal -mPUT /customers/1 -c'{"firstname": "Bob"}' -tjson
+    Sending: https://missguided.development.local/api/rest/customers/2
+    Request body: {"firstname": "Bob"}
+    null
+
+    $ php bin/rest-test.php request -plocal /customers/1
+    Sending: https://magento.local/api/rest/customers/1
+    {
+        "entity_id": "1",
+        "website_id": "1",
+        "email": "1432138706@example.com",
+        "group_id": "1",
+        "created_at": "2015-05-20 16:19:15",
+        "disable_auto_group_change": "0",
+        "firstname": "Bob",
+        "lastname": "lastname",
+        "created_in": "UK",
+        "dob": "1980-01-01 00:00:00"
+    }
+
 
 ### Troubleshooting
 
