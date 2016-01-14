@@ -13,21 +13,21 @@ Start by installing [composer](https://getcomposer.org/) dependencies:
 
 ### Authorize
 
-    php bin/rest-test.php authorize [-p|--platform_id="..."]
+    php bin/rest-test.php authorize [-p|--platform_id <platform_id>]
 
 Run this command first.  The platform id flag allows you to store multiple named configurations (staging, production etc). Pick whatever you like, but remember it for later.
 
 You'll be prompted for your Magento Base Url, Consumer Key and Consumer Secret (set these up in Magento Admin).
-The script will then initialise an oAuth session and try to open a browser window to allow you to authorise the application. 
+The script will then initialise an oAuth session and try to open a browser window to allow you to authorise the application.
 It listens on port 8000 for the callback.  Once the authorisation has completed, the token is stored in config.json.
 
 ### Request
 
-    php bin/rest-test.php request [-p|--platform_id="..."] [-m|--http_verb[="..."]] [-t|--request_type[="..."]] [-c|--request_content[="..."]] http_resource
+    php bin/rest-test.php request [-p|--platform_id <platform_id>] [-m|--http_verb GET|DELETE|POST|PUT] [-t|--request_type <request_type>] [-c|--request_content <request_content>] <http_resource>
 
 Use this command to issue a REST request.  The results are displayed as json.  Use the platform id flag to load the config and tokens you set up previously in the authorise step.
 
-Get Example:
+GET Example:
 
     $ php bin/rest-test.php request -plocal /customers
     Sending: https://magento.local/api/rest/customers
@@ -58,7 +58,7 @@ Get Example:
         }
     }
 
-Put Example:
+PUT Example:
 
     $ php bin/rest-test.php request -plocal -mPUT /customers/1 -c'{"firstname": "Bob"}' -tjson
     Sending: https://missguided.development.local/api/rest/customers/2

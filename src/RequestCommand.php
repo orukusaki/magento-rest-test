@@ -28,9 +28,9 @@ class RequestCommand extends Command
             ->setDescription('Perform a REST request (after authorising)')
             ->addArgument('http_resource', InputArgument::REQUIRED, 'HTTP Resource')
             ->addOption('platform_id', 'p', InputOption::VALUE_REQUIRED, 'Platform Id (from config.json)')
-            ->addOption('http_verb', 'm', InputOption::VALUE_OPTIONAL, 'HTTP Verb (default: GET)', 'GET')
-            ->addOption('request_content', 'c', InputOption::VALUE_OPTIONAL, 'HTTP Request Content')
-            ->addOption('request_type', 't', InputOption::VALUE_OPTIONAL, 'HTTP Request Content Type');
+            ->addOption('http_verb', 'm', InputOption::VALUE_REQUIRED, 'HTTP Verb (default: GET)', 'GET')
+            ->addOption('request_content', 'c', InputOption::VALUE_REQUIRED, 'HTTP Request Content')
+            ->addOption('request_type', 't', InputOption::VALUE_REQUIRED, 'HTTP Request Content Type');
     }
 
     /**
