@@ -85,6 +85,13 @@ PUT Example:
 
 If you get an error response from Magento, your token might have expired.  Try running authorize again.
 
+If you get the following error response body back from your Magento installation (if you are running a VM) when trying to authenticate:
+
+     [Symfony\Component\Process\Exception\RuntimeException]
+      oauth_problem=timestamp_refused
+
+Your client is more than 5 minutes out of sync with your server and authentication will fail. Try updating the time of your VM.
+
 ### Contributing
 
 PRs, Issues welcomed on [github](https://github.com/orukusaki/magento-rest-test)
