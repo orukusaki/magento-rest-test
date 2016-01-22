@@ -11,6 +11,7 @@ use GuzzleHttp\Message\ResponseInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -38,6 +39,8 @@ class RequestCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $errOutput = $this->getErrOutput($output);
+
         $platformId = $input->getOption('platform_id');
 
         /** @var Callable $clientFactory */
@@ -47,7 +50,7 @@ class RequestCommand extends Command
 
         try {
             $request = $client->createRequest($input->getOption('http_verb'), 'api/rest/' . ltrim($input->getArgument('http_resource'), '/'));
-            $output->writeln('Sending: ' . $request->getUrl());
+            $errOutput->writeln('<info>Sending: ' . $request->getUrl() . '</info>');
 
             if ($input->getOption('request_content')) {
 
@@ -58,7 +61,7 @@ class RequestCommand extends Command
                 $body = Stream::factory($input->getOption('request_content'));
                 $request->setBody($body);
                 $request->setHeader('Content-Type', $this->parseContentType($input->getOption('request_type')));
-                $output->writeln('Request body: ' . $body);
+                $output->writeln('Request body: ' . $body, OutputInterface::OUTPUT_RAW);
             }
 
             /** @var ResponseInterface $response */
@@ -68,11 +71,10 @@ class RequestCommand extends Command
 
         } catch (RequestException $e) {
 
-            $output->writeln('Request failed: ' . (string) $e->getResponse()->getBody());
+            $errOutput->writeln('<error> Request failed: ' . (string) $e->getResponse()->getBody() . '</error>');
 
-            throw $e;
         } catch (Exception $e) {
-            $output->writeln('Invalid request: ' . (string) $e->getMessage());
+            $errOutput->writeln('<error> Invalid request: ' . (string) $e->getMessage() . '</error>');
         }
     }
 
@@ -81,14 +83,16 @@ class RequestCommand extends Command
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
+        $errOutput = $this->getErrOutput($output);
+
         if (!$input->getOption('platform_id')) {
 
-            $input->setOption('platform_id', $this->getHelper('dialog')->ask($output, "Platform Id:"));
+            $input->setOption('platform_id', $this->getHelper('dialog')->ask($errOutput, "Platform Id:"));
         }
 
         if (!$input->getArgument('http_resource')) {
 
-            $input->setArgument('http_resource', $this->getHelper('dialog')->ask($output, "HTTP Resource:"));
+            $input->setArgument('http_resource', $this->getHelper('dialog')->ask($errOutput, "HTTP Resource:"));
         }
     }
 
@@ -123,5 +127,15 @@ class RequestCommand extends Command
         }
 
         return json_encode($response->json(), JSON_PRETTY_PRINT);
+    }
+
+    /**
+     * @param OutputInterface $output
+     *
+     * @return OutputInterface
+     */
+    private function getErrOutput(OutputInterface $output)
+    {
+        return $output instanceof ConsoleOutputInterface ? $output->getErrorOutput() : $output;
     }
 }
