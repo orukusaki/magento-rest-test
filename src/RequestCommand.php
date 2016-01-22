@@ -64,7 +64,7 @@ class RequestCommand extends Command
             /** @var ResponseInterface $response */
             $response = $client->send($request);
 
-            $output->writeln(json_encode($response->json(), JSON_PRETTY_PRINT));
+            $output->writeLn($this->formatResponse($response));
 
         } catch (RequestException $e) {
 
@@ -98,12 +98,30 @@ class RequestCommand extends Command
      * @param $type
      * @return string
      */
-    protected function parseContentType($type) {
+    protected function parseContentType($type)
+    {
         $types = array(
             'json' => 'application/json',
             'xml' => 'application/xml'
         );
 
         return (in_array($type, array_keys($types))) ? $types[$type] : (string) $type;
+    }
+
+    /**
+     * Format the response based on which http verb you are using
+     * When you create an object through the rest API, Magento doesn't return a valid response and instead sets a
+     * "location" header
+     *
+     * @param $response
+     * @return string
+     */
+    protected function formatResponse($response)
+    {
+        if ($response->getHeader('location') !== "") {
+            return $response->getHeader('location');
+        }
+
+        return json_encode($response->json(), JSON_PRETTY_PRINT);
     }
 }
