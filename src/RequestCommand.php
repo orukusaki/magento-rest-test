@@ -118,7 +118,7 @@ class RequestCommand extends Command
      */
     protected function formatResponse($response)
     {
-        if ($response->getHeader('locationa') !== "") {
+        if ($response->getHeader('location') !== "") {
             return $response->getHeader('location');
         }
 
