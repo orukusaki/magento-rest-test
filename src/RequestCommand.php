@@ -64,7 +64,7 @@ class RequestCommand extends Command
             /** @var ResponseInterface $response */
             $response = $client->send($request);
 
-            $output->writeLn($this->formatResponse($response, $input->getOption('http_verb')));
+            $output->writeLn($this->formatResponse($response));
 
         } catch (RequestException $e) {
 
@@ -114,12 +114,11 @@ class RequestCommand extends Command
      * "location" header
      *
      * @param $response
-     * @param $httpVerb
      * @return string
      */
-    protected function formatResponse($response, $httpVerb)
+    protected function formatResponse($response)
     {
-        if (strtolower($httpVerb) == "post") {
+        if ($response->getHeader('locationa') !== "") {
             return $response->getHeader('location');
         }
 
